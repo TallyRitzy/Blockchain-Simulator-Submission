@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="simulation-token" content="{{ token }}">
+  <title>Blockchain Observatory</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <header>
+    <div class="brand"><span class="mark" aria-hidden="true">◈</span><div>Blockchain Observatory<small>Proof-of-Stake simulation</small></div></div>
+    <div class="header-status"><span id="statusDot" class="dot"></span><span id="connectionStatus">Connecting to node…</span></div>
+  </header>
+  <main>
+    <section class="intro">
+      <div><p class="eyebrow">LIVE NETWORK</p><h1 id="nodeTitle">Your node</h1><p id="nodeDetails">Reading the local simulation…</p></div>
+      <div class="room-card"><span class="muted">ROOM</span><strong id="room">—</strong><span id="discovery">Waiting for discovery</span></div>
+    </section>
+    <div id="notice" role="status" aria-live="polite" hidden></div>
+    <section class="metrics" aria-label="Network summary">
+      <article><span>Available coins</span><strong id="available">—</strong><small><span id="balance">—</span> total · <span id="locked">—</span> staked</small></article>
+      <article><span>Block height</span><strong id="height">—</strong><small id="weight">—</small></article>
+      <article><span>Peer connections</span><strong id="connections">—</strong><small id="peerCount">—</small></article>
+      <article><span>Next lottery slot</span><strong id="countdown">—</strong><small id="slot">—</small></article>
+    </section>
+    <div class="columns">
+      <section class="panel">
+        <div class="panel-title"><h2>Send coins</h2><span class="tag">Signed by this node</span></div>
+        <form id="transferForm">
+          <label for="receiver">Receiver</label><select id="receiver" required><option value="">Waiting for peers…</option></select>
+          <label for="amount">Amount</label><div class="input-row"><input id="amount" type="number" min="0.000001" step="0.000001" placeholder="e.g. 15" required><button type="submit">Send transaction</button></div>
+          <p class="hint">Transactions wait here until a validator includes them in a block.</p>
+        </form>
+        <div class="divider"></div>
+        <div class="panel-title"><h2>Validator stake</h2><span id="validatorState" class="tag">—</span></div>
+        <form id="stakeForm">
+          <label for="stakeAmount">New total stake in whole coins</label><div class="input-row"><input id="stakeAmount" type="number" min="1" step="1" placeholder="e.g. 10" required><button class="secondary" type="submit">Register stake</button></div>
+          <p class="hint">Stake changes activate after confirmation. Stake stays locked for this simulation and can only increase.</p>
+        </form>
+        <details class="wallet"><summary>My wallet identity</summary><textarea id="publicKey" readonly aria-label="Public key" rows="5"></textarea><button id="copyKey" type="button" class="small secondary">Copy public key</button><p class="hint">This public key can be shared. Your private key is never sent to this page.</p></details>
+      </section>
+      <section class="panel">
+        <div class="panel-title"><h2>Connected network</h2><span id="networkBadge" class="tag">Peer to peer</span></div>
+        <svg id="networkGraph" viewBox="0 0 520 220" role="img" aria-label="Connections from this node to discovered peers"></svg>
+        <div class="table-wrap"><table><thead><tr><th>Node</th><th>Address</th><th>Link</th><th>Stake</th></tr></thead><tbody id="peers"></tbody></table></div>
+        <p class="hint">The directory introduces nodes. Blocks and transactions travel directly between peers.</p>
+      </section>
+    </div>
+    <section class="panel">
+      <div class="panel-title"><div><h2>Blockchain</h2><p class="hint">Latest 100 blocks on this node’s selected chain. Newest first.</p></div><span id="networkId" class="mono tag" title="Genesis block identity">—</span></div>
+      <div id="blocks" class="block-strip"><p class="empty">Waiting for blockchain history…</p></div>
+    </section>
+    <div class="columns">
+      <section class="panel">
+        <div class="panel-title"><h2>Pending transactions</h2><span id="pendingCount" class="tag">0</span></div>
+        <div class="table-wrap"><table><thead><tr><th>Type</th><th>From → to</th><th>Amount</th></tr></thead><tbody id="pending"></tbody></table></div>
+      </section>
+      <section class="panel">
+        <div class="panel-title"><h2>Consensus activity</h2><span id="rejected" class="tag">0 rejected</span></div>
+        <p id="penalties" class="hint">No slashing evidence.</p>
+        <ol id="events" class="events"></ol>
+        <div id="attackPanel" hidden><p class="hint">Malicious mode deliberately double-signs winning blocks. Use this button to test rejection of an overspending transaction.</p><button id="attack" class="danger" type="button">Send invalid transaction</button></div>
+      </section>
+    </div>
+    <details class="panel contracts"><summary>Smart contracts</summary>
+      <p class="hint">Optional existing functionality. Python contracts return a state dictionary and a message. Execute only code you understand in this local demonstration.</p>
+      <div class="columns">
+        <form id="deployForm"><label for="contractCode">Python code</label><textarea id="contractCode" rows="8" spellcheck="false">def increment(amount, state):
+    state["count"] = state.get("count", 0) + amount
+    return state, "Counter updated"</textarea><button class="secondary" type="submit">Deploy contract</button></form>
+        <form id="invokeForm"><label for="contractId">Confirmed contract</label><select id="contractId"><option value="">No contracts yet</option></select><label for="functionName">Function</label><input id="functionName" value="increment"><label for="contractArgs">Arguments as a JSON array</label><input id="contractArgs" value="[1]"><button class="secondary" type="submit">Invoke contract</button></form>
+      </div>
+    </details>
+    <footer><span id="telemetry">Synchronising</span><span>Local educational simulation · updates every 2 seconds</span></footer>
+  </main>
+</body>
+</html>
+
